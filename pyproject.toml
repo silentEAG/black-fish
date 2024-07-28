@@ -1,0 +1,36 @@
+[project]
+name = "black-fish"
+version = "0.1.0"
+description = "Add your description here"
+dependencies = [
+    "drissionpage>=4.0",
+    "asyncio>=3.4.3",
+    "aiohttp>=3.9.5",
+    "loguru>=0.7.2",
+    "parsel>=1.9.1",
+    "markdownify>=0.13.1",
+    "aiofiles>=24.1.0",
+]
+readme = "README.md"
+requires-python = ">= 3.8"
+
+
+[project.scripts]
+dev = 'black_fish:main'
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.rye]
+managed = true
+dev-dependencies = [
+    "pytest>=8.3.1",
+]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/black_fish"]
+
