@@ -18,8 +18,8 @@ class XZSpider(BaseArticleSpider):
                 "Referer": "https://xz.aliyun.com"
             },
             cookies={
-                "acw_tc": "1a0c380a17217350528242103e00d3f2044f8b5de0b908fe2f87f78a013578",
-                "acw_sc__v3": "669f9791f925e1a074dbf2ad14950635054dbf5f"
+                "acw_tc": "1a0c380917221828212171387e0037facf793235036fdff4cea42cedeca93f",
+                "acw_sc__v3": "66a66cab88822a5511a46d6925e14924fbf9a664"
             }
         )
 
