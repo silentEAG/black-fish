@@ -1,10 +1,11 @@
 from typing import List
-from black_fish.base_spider import BaseArticleSpider, ArticlePreview
 import aiohttp
 from parsel import Selector
 from loguru import logger
-import asyncio
 from markdownify import markdownify as md
+
+from ..base_spider import BaseArticleSpider, ArticlePreview
+
 
 BASE_URL = "https://tttang.com"
 

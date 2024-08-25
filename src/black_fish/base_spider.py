@@ -7,7 +7,6 @@ import hashlib
 import asyncio
 import re
 import os
-import aiofiles
 import json
 from loguru import logger
 
@@ -89,9 +88,6 @@ class BaseArticleSpider(ABC):
         if is_img:
             save_to_item_path = f"{save_to_item_path}/img"
             os.makedirs(save_to_item_path, exist_ok=True)
-
-        # async with aiofiles.open(f"{save_to_item_path}/{file_name}", "w" if isinstance(content, str) else "wb") as f:
-            # await f.write(content)
 
         with open(f"{save_to_item_path}/{file_name}", "w" if isinstance(content, str) else "wb") as f:
             f.write(content)
