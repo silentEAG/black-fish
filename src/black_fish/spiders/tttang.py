@@ -6,7 +6,6 @@ from markdownify import markdownify as md
 
 from ..base_spider import BaseArticleSpider, ArticlePreview
 
-
 BASE_URL = "https://tttang.com"
 
 class TTTangSpider(BaseArticleSpider):
@@ -18,6 +17,7 @@ class TTTangSpider(BaseArticleSpider):
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
                 "Referer": "https://tttang.com/"
             },
+            timeout=aiohttp.ClientTimeout(8)
         )
 
     async def prepare_for_run(self):

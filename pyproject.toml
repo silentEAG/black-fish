@@ -9,7 +9,7 @@ dependencies = [
     "loguru>=0.7.2",
     "parsel>=1.9.1",
     "markdownify>=0.13.1",
-    "aiofiles>=24.1.0",
+    "anyio>=4.4.0",
 ]
 readme = "README.md"
 requires-python = ">= 3.8"
@@ -33,4 +33,3 @@ allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/black_fish"]
-
