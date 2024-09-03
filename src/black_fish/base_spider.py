@@ -68,6 +68,7 @@ class BaseArticleSpider(ABC):
         self.save_diretory = save_diretory
         self.client: ClientSession = ...
         self.find_local_cache = False
+        self.proxy: str = None
 
     @abstractmethod
     async def fetch_remote_preview_articles(self) -> List[ArticlePreview]:
@@ -79,6 +80,9 @@ class BaseArticleSpider(ABC):
 
     async def prepare_for_run(self):
         ...
+
+    def set_proxy(self, proxy: str):
+        self.proxy = proxy
 
     def set_save_directory(self, save_directory: str):
         self.save_diretory = save_directory
@@ -196,11 +200,14 @@ class BaseArticleSpider(ABC):
         sem = fresh_sem if fresh_sem is not None else self.fetch_limit_sem
         async with sem:
             try:
-                resp = await self.client.get(uri)
                 if is_bytes:
+                    resp = await self.client.get(uri)
                     text = await resp.read()
                 else:
+                    resp = await self.client.get(uri, proxy = self.proxy)
                     text = await resp.text()
+                # sleep 0.6s
+                await asyncio.sleep(0.6)
             except:
                 if ignore_exception:
                     logger.error(f"fetch {uri} failed")

@@ -13,11 +13,20 @@ from .base_spider import BaseArticleSpider
 import time
 
 async def runtime():
+
+
+
     config = Config()
     executor = Executor(config)
     # xz_spider = XZSpider()
     # tttang_spider = TTTangSpider()
     qax_spider = QAXSpider()
+
+    # read proxy from .proxy
+    with open('.proxy', 'r') as f:
+        proxy_setting = f.read()
+        qax_spider.set_proxy(proxy_setting)
+
     executor.spiders = [qax_spider]
 
     start = time.time()

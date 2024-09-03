@@ -6,6 +6,7 @@ dist/
 wheels/
 *.egg-info
 *.lock
+.proxy
 
 # venv
 .venv

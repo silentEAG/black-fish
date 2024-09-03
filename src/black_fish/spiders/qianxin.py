@@ -14,7 +14,7 @@ BASE_URL = "https://forum.butian.net/articles"
 class QAXSpider(BaseArticleSpider):
 
     def __init__(self):
-        super().__init__(source="QAX", fetch_limit_sem=20)
+        super().__init__(source="QAX", fetch_limit_sem=3)
         self.client = aiohttp.ClientSession(
             headers={
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
@@ -50,9 +50,7 @@ class QAXSpider(BaseArticleSpider):
 
     def parse_to_md(self, html_content: str):
         selector = Selector(text=html_content)
-
-        article_content = selector.css("div.content").get()
-        article_content_markdown = pypandoc.convert_text(article_content, "md", format="html")
+        article_content_markdown = selector.xpath('//textarea[@id="md_view_content"]/text()').get()
         return article_content_markdown
 
     async def parse_preview_articles_on_one_page(self, text):
