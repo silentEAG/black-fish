@@ -7,6 +7,7 @@ from black_fish.executor import Executor
 from .config import Config
 from .spiders.xz import XZSpider
 from .spiders.tttang import TTTangSpider
+from .spiders.qianxin import QAXSpider
 from .base_spider import BaseArticleSpider
 
 import time
@@ -14,21 +15,13 @@ import time
 async def runtime():
     config = Config()
     executor = Executor(config)
-    xz_spider = XZSpider()
+    # xz_spider = XZSpider()
     # tttang_spider = TTTangSpider()
-    executor.spiders = [xz_spider]
+    qax_spider = QAXSpider()
+    executor.spiders = [qax_spider]
 
     start = time.time()
     await executor.run()
-
-    # await tttang_spider.fetch_remote_preview_articles()
-
-    # await xz_spider.prepare_for_run()
-    # await xz_spider.close()
-
-    # f = open("./xz-sample.html", "r")
-    # xz_sample_content = f.read()
-    # xz_spider.parse_to_md(xz_sample_content)
 
     end = time.time()
     print(end - start)
