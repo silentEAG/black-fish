@@ -1,10 +1,12 @@
 from typing import List
-from black_fish.base_spider import BaseArticleSpider, ArticlePreview
 import aiohttp
 from parsel import Selector
 from loguru import logger
-import asyncio
 from markdownify import markdownify as md
+from urllib.parse import urlparse
+from os import path
+
+from ..base_spider import BaseArticleSpider, ArticlePreview
 
 BASE_URL = "https://xz.aliyun.com"
 
@@ -20,7 +22,8 @@ class XZSpider(BaseArticleSpider):
             cookies={
                 "acw_tc": "1a0c380917221828212171387e0037facf793235036fdff4cea42cedeca93f",
                 "acw_sc__v3": "66a66cab88822a5511a46d6925e14924fbf9a664"
-            }
+            },
+            timeout=aiohttp.ClientTimeout(8)
         )
 
     async def prepare_for_run(self):
@@ -70,3 +73,10 @@ class XZSpider(BaseArticleSpider):
             if article_hash in self.article_preview_local.keys():
                 self.find_local_cache = True
             self.add_article_preview(title=title, url=url, publish_at=time)
+
+    def img_url_verify(self, url: str) -> bool:
+        url_ = urlparse(url)
+        if url_.scheme not in ("http", "https"): return False
+        if path.splitext(url_.path)[1] not in ['.jpg', '.png', '.gif', '.webp', '.jpeg']:
+            return False
+        return True

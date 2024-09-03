@@ -7,7 +7,7 @@ import hashlib
 import asyncio
 import re
 import os
-import aiofiles
+import anyio
 import json
 from loguru import logger
 
@@ -90,11 +90,9 @@ class BaseArticleSpider(ABC):
             save_to_item_path = f"{save_to_item_path}/img"
             os.makedirs(save_to_item_path, exist_ok=True)
 
-        # async with aiofiles.open(f"{save_to_item_path}/{file_name}", "w" if isinstance(content, str) else "wb") as f:
-            # await f.write(content)
-
-        with open(f"{save_to_item_path}/{file_name}", "w" if isinstance(content, str) else "wb") as f:
-            f.write(content)
+        async with await anyio.open_file(f"{save_to_item_path}/{file_name}",
+                                         mode="w" if isinstance(content, str) else "wb") as f:
+            await f.write(content)
 
     async def save_index(self):
         index_path = f"{self.save_diretory}/{self.source}/index"
@@ -167,13 +165,32 @@ class BaseArticleSpider(ABC):
         remote_imgs = img_re.findall(article_content_markdown)
 
         for url in remote_imgs:
+            if url == '': continue
             local_img_url = "img/" + hashlib.sha256(f"{url}".encode()).hexdigest() + "." + url.split(".")[-1]
-            article_content_markdown = article_content_markdown.replace(url, local_img_url)
+            article_content_markdown = article_content_markdown.replace(url, local_img_url, 1)
 
         title = preview_article.title
         await self.save_item(article_content_markdown, f"{title}.md")
 
-        return remote_imgs
+        img_sem = asyncio.Semaphore(5)
+        fetch_img_tasks = []
+        for img_url in remote_imgs:
+            img_url = img_url.split('#')[0]
+            if not self.img_url_verify(img_url): continue
+            img_name = hashlib.sha256(f"{img_url}".encode()).hexdigest() + "." + img_url.split(".")[-1]
+            task = asyncio.create_task(
+                self.parallel_fetch_source(
+                    img_url,
+                    callback=self.fetch_and_store_img,
+                    is_bytes=True,
+                    fresh_sem=img_sem,
+                    # pass img_name to callback
+                    img_name=img_name,
+                    ignore_exception=True
+                )
+            )
+            fetch_img_tasks.append(task)
+        await asyncio.gather(*fetch_img_tasks)
 
     async def parallel_fetch_source(self, uri: str, callback = None, ignore_exception = False, fresh_sem: Union[None, Semaphore] = None, is_bytes=False, **kwargs):
         sem = fresh_sem if fresh_sem is not None else self.fetch_limit_sem
@@ -200,3 +217,7 @@ class BaseArticleSpider(ABC):
 
     async def close(self):
         await self.client.close()
+
+    @abstractmethod
+    def img_url_verify(self, url: str) -> bool:
+        ...
